@@ -1,5 +1,3 @@
-package org.vg.cc.mp2;
-
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
