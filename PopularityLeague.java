@@ -101,20 +101,26 @@ public class PopularityLeague extends Configured implements Tool {
         	countToLinks.add(new Pair<Integer, Integer>(pageLinkCount, key.get()));
         }
     	
-		@Override
-		protected void cleanup(Context context) throws IOException, InterruptedException {
-			int rank = 0;
-			Integer prevPageCount = null;
-			for(Pair<Integer, Integer> countToLink: countToLinks){
-				if(prevPageCount == null){
-					prevPageCount = countToLink.first;
-				}else if(prevPageCount.intValue() != countToLink.first){
-					rank +=1;
-					prevPageCount = countToLink.first;
-				}
+	@Override
+	protected void cleanup(Context context) throws IOException, InterruptedException {
+		int rank = 0;
+		int sameRank = 0;
+		Integer prevPageCount = null;
+		for(Pair<Integer, Integer> countToLink: countToLinks){
+			if(prevPageCount == null){
+				prevPageCount = countToLink.first;
+				context.write(new IntWritable(countToLink.second), new IntWritable(rank));
+			}else if(prevPageCount.intValue() != countToLink.first){
+				rank = rank + sameRank + 1;
+				sameRank = 0;
+				context.write(new IntWritable(countToLink.second), new IntWritable(rank));
+			}else{
+				sameRank += 1;
 				context.write(new IntWritable(countToLink.second), new IntWritable(rank));
 			}
+			
 		}
+	}
     	
     	
     }
